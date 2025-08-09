@@ -1,0 +1,432 @@
+<!--
+  Dear Mireia - Single-file timeline website (index.html)
+  - Mobile-first, optimised for iPhone / Safari
+  - Alternating vertical timeline with photos down each side
+  - Use the `images/` folder to add your pictures (e.g. images/photo1.jpg)
+  - Replace placeholder captions inside each `.caption` element
+  - Deploy to GitHub Pages: create a repo, add this index.html (and images/), push to `main` or `gh-pages`, then enable Pages in repo settings.
+
+  Notes:
+  - All code (HTML/CSS/JS) is in this single file for easy GitHub Pages deployment.
+  - To change colors, edit the CSS :root variables.
+-->
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Dear Mireia</title>
+    <meta name="description" content="A birthday timeline for Mireia" />
+    <style>
+        :root{
+            --bg: #fffaf7;
+            --muted: #f5e9e6;
+            --accent: #d98a9e;
+            --accent-deep: #b55a6b;
+            --gold: #d9b77c;
+            --text: #2b2b2b;
+            --glass: rgba(255,255,255,0.6);
+            --max-width: 900px;
+            --radius: 18px;
+            --shadow: 0 6px 20px rgba(43,43,43,0.08);
+            --gap: 18px;
+        }
+        *{box-sizing:border-box}
+        html,body{height:100%}
+        body{
+            margin:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial;
+            -webkit-font-smoothing:antialiased;background:linear-gradient(180deg,var(--bg) 0%,#fff 100%);
+            color:var(--text);padding:env(safe-area-inset-top) 16px env(safe-area-inset-bottom);line-height:1.45;
+        }
+        .wrap{max-width:var(--max-width);margin:0 auto;}
+        .hero{min-height:88vh;display:grid;place-items:center;text-align:center;padding:48px 12px;}
+        .hero h1{font-size:clamp(32px, 9vw, 56px);margin:0 0 12px 0;color:var(--accent-deep);letter-spacing:0.6px;}
+        .hero p{margin:0 0 22px 0;font-size:16px;color:#6b6b6b}
+        .down-btn{display:inline-flex;align-items:center;gap:10px;padding:10px 16px;border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--gold));color:white;font-weight:600;cursor:pointer;box-shadow:var(--shadow);border:none}
+        .down-arrow{font-size:18px}
+        .timeline{position:relative;padding:30px 0 80px 0;}
+        .timeline::before{content:'';position:absolute;top:0;bottom:0;left:50%;width:4px;background:linear-gradient(180deg,var(--muted),transparent 60%);transform:translateX(-50%);border-radius:4px;display:none;}
+        .item{display:flex;align-items:flex-start;gap:12px;padding:18px 0;position:relative;opacity:0;transform:translateY(26px);}
+        .item.in-view{opacity:1;transform:none;transition:all 700ms cubic-bezier(.2,.9,.25,1)}
+        .media{flex:0 0 110px;height:180px;border-radius:14px;overflow:hidden;background:#eee;box-shadow:var(--shadow);position:relative;flex-basis:34%;max-width:34%;}
+        .media img{width:100%;height:100%;object-fit:cover;display:block}
+        .content{background:var(--glass);backdrop-filter:blur(4px);padding:12px;border-radius:12px;flex:1;align-self:center;box-shadow:var(--shadow);}
+        .date{font-size:13px;color:#7b6b6b;margin-bottom:6px;font-weight:600}
+        .caption{font-size:15px;margin:0}
+        @media(min-width:680px){
+            .timeline{padding-top:40px}
+            .timeline::before{display:block}
+            .item{width:100%;padding:26px 0}
+            .item.left{flex-direction:row}
+            .item.right{flex-direction:row-reverse}
+            .item .content{max-width:46%;}
+            .item .media{max-width:36%;height:240px;}
+            .item::after{content:'';position:absolute;left:50%;top:44px;width:14px;height:14px;border-radius:50%;transform:translateX(-50%);background:var(--accent-deep);box-shadow:0 2px 8px rgba(181,90,107,0.25)}
+        }
+        @media(max-width:679px){
+            .item{flex-direction:row;gap:12px}
+            .media{flex-basis:36%;max-width:36%}
+            .content{flex-basis:64%}
+        }
+        .final{margin:40px 0 120px 0;text-align:center;padding:28px;border-radius:20px;background:linear-gradient(180deg,rgba(217,138,158,0.08),rgba(217,183,124,0.04));box-shadow:var(--shadow);}
+        .final h2{margin:6px 0 12px 0;color:var(--accent-deep);font-size:28px}
+        .final p{font-size:18px;margin:0 0 12px 0}
+        .muted-small{color:#7d6b6b;font-size:13px}
+        @media(max-width:360px){
+            .media{height:150px}
+            .content{padding:10px}
+        }
+    </style>
+</head>
+<body>
+<div class="wrap">
+    <section class="hero" id="hero">
+        <div>
+            <h1>Dear Mireia</h1>
+            <p>Our little story — moments, laughs, adventures. Scroll down to open it.</p>
+            <button class="down-btn" id="startBtn" aria-label="Start timeline">
+                <span>Start</span>
+                <span class="down-arrow">⬇︎</span>
+            </button>
+        </div>
+    </section>
+
+    <section class="timeline" id="timeline">
+
+        <!-- TIMELINE ITEM TEMPLATE
+             Copy / duplicate the .item blocks below, edit the image src, date, and caption.
+             On wide screens left/right alternate automatically by adding class "left" or "right".
+        -->
+
+        <article class="item left">
+            <div class="media">
+                <img src="images/FirstMessage.png" alt="Photo 1">
+            </div>
+            <div class="content">
+                <div class="date">September 22, 2022 — First message</div>
+                <p class="caption">I had no idea deciding to help Marina's friend would be the best decision of my life.</p>
+            </div>
+        </article>
+
+        <article class="item right">
+            <div class="media">
+                <img src="images/IMG_3048.JPEG" alt="Photo 2">
+            </div>
+            <div class="content">
+                <div class="date">October 8, 2023 — Paniagua</div>
+                <p class="caption">Our first (unfortunately) and worst picture.</p>
+            </div>
+        </article>
+
+        <article class="item left">
+            <div class="media">
+                <img src="images/IMG_3194.JPG" alt="Photo 3">
+            </div>
+            <div class="content">
+                <div class="date">October 10, 2023 — Walk with the cats</div>
+                <p class="caption">The first time we uploaded a similar story and people got suspicious.</p>
+            </div>
+        </article>
+
+        <article class="item right">
+            <div class="media">
+                <img src="images/IMG_3436.JPEG" alt="Photo 4">
+            </div>
+            <div class="content">
+                <div class="date">November 09, 2023 — Cathedral Evening</div>
+                <p class="caption">Visiting the cathedral before watching movies all night, wishsing you would stay.</p>
+            </div>
+        </article>
+
+        <article class="item left">
+            <div class="media">
+                <img src="images/IMG_2403.JPG" alt="Photo 5">
+            </div>
+            <div class="content">
+                <div class="date">January 06, 2025 — I love you</div>
+                <p class="caption">This was the first time I ever heard you loved me, I slept as the happiest man in the world.</p>
+            </div>
+        </article>
+
+        <article class="item right">
+            <div class="media">
+                <img src="images/IMG_0253.JPEG" alt="Photo 6">
+            </div>
+            <div class="content">
+                <div class="date">March 14, 2025 — Cáceres Bound</div>
+                <p class="caption">On our way to visit your family for the first time, I was more nervous than I told you.</p>
+            </div>
+        </article>
+
+        <article class="item left">
+            <div class="media">
+                <img src="images/IMG_3305.JPEG" alt="Photo 7">
+            </div>
+            <div class="content">
+                <div class="date">March 14, 2025 — Exploring Cáceres</div>
+                <p class="caption">My first time seeing Cáceres, my tour guide was gorgeous.</p>
+            </div>
+        </article>
+
+        <article class="item right">
+            <div class="media">
+                <img src="images/IMG_3394.JPG" alt="Photo 8">
+            </div>
+            <div class="content">
+                <div class="date">March 16, 2025 — Finally a good photo</div>
+                <p class="caption">Our first picture together as a couple in Béjar <3</p>
+            </div>
+        </article>
+
+        <article class="item left">
+            <div class="media">
+                <img src="images/IMG_3408.JPG" alt="Photo 9">
+            </div>
+            <div class="content">
+                <div class="date">March 17, 2025 — Our first night together</div>
+                <p class="caption">I can sleep anytime but that night was only once.</p>
+            </div>
+        </article>
+
+        <article class="item right">
+            <div class="media">
+                <img src="images/IMG_4630.JPEG" alt="Photo 10">
+            </div>
+            <div class="content">
+                <div class="date">April 30, 2025 — First picture with Ava</div>
+                <p class="caption">You were both so excited to meet eachother.</p>
+            </div>
+        </article>
+
+        <article class="item left">
+            <div class="media">
+                <img src="images/IMG_4639.JPEG" alt="Photo 11">
+            </div>
+            <div class="content">
+                <div class="date">April 30, 2025 — First dinner at my house</div>
+                <p class="caption">A fresh bolognese that a diabetic told me didn't have enough sugar.</p>
+            </div>
+        </article>
+
+        <article class="item right">
+            <div class="media">
+                <img src="images/IMG_4646.JPEG" alt="Photo 12">
+            </div>
+            <div class="content">
+                <div class="date">April 30, 2025 — A quick photo before bed</div>
+                <p class="caption">Our first mirror selfie together before our first sleep in the new house together.</p>
+            </div>
+        </article>
+
+        <article class="item left">
+            <div class="media">
+                <img src="images/IMG_4662.JPEG" alt="Photo 13">
+            </div>
+            <div class="content">
+                <div class="date">May 01, 2025 — A selfie with the bridge</div>
+                <p class="caption">When I finally convinced you to visit Bath.</p>
+            </div>
+        </article>
+
+        <article class="item right">
+            <div class="media">
+                <img src="images/IMG_4719.JPEG" alt="Photo 14">
+            </div>
+            <div class="content">
+                <div class="date">May 01, 2025 — Sat on a wall at the crescent</div>
+                <p class="caption">Half an hour before you got destroyed at mini golf.</p>
+            </div>
+        </article>
+
+        <article class="item left">
+            <div class="media">
+                <img src="images/IMG_4806.JPEG" alt="Photo 15">
+            </div>
+            <div class="content">
+                <div class="date">May 02, 2025 — Feeding Clive</div>
+                <p class="caption">When you made putting fuel in a car a two hand job.</p>
+            </div>
+        </article>
+
+        <article class="item right">
+            <div class="media">
+                <img src="images/IMG_4843.JPEG" alt="Photo 16">
+            </div>
+            <div class="content">
+                <div class="date">May 02, 2025 — Buying Cheddar Cheese</div>
+                <p class="caption">When you found out Americans had lied about Cheddar cheese.</p>
+            </div>
+        </article>
+
+        <article class="item left">
+            <div class="media">
+                <img src="images/IMG_4861.JPEG" alt="Photo 17">
+            </div>
+            <div class="content">
+                <div class="date">May 02, 2025 — Visiting Wells</div>
+                <p class="caption">Trying to teach you the difference in pronunciation between Wells and Wales.</p>
+            </div>
+        </article>
+
+        <article class="item right">
+            <div class="media">
+                <img src="images/IMG_4969.JPEG" alt="Photo 18">
+            </div>
+            <div class="content">
+                <div class="date">May 03, 2025 — A day in the capital</div>
+                <p class="caption">When we traded taking picture of each other with the couple in Westminster.</p>
+            </div>
+        </article>
+
+        <article class="item left">
+            <div class="media">
+                <img src="images/IMG_4997.JPEG" alt="Photo 19">
+            </div>
+            <div class="content">
+                <div class="date">May 03, 2025 — We found Paddington!</div>
+                <p class="caption">When I photobombed your selfies with Paddington bear.</p>
+            </div>
+        </article>
+
+        <article class="item right">
+            <div class="media">
+                <img src="images/IMG_5068.JPEG" alt="Photo 20">
+            </div>
+            <div class="content">
+                <div class="date">May 06, 2025 — A Kiss at Heavens Gate</div>
+                <p class="caption">Every day is heaven with you.</p>
+            </div>
+        </article>
+
+        <article class="item left">
+            <div class="media">
+                <img src="images/IMG_5267.JPEG" alt="Photo 21">
+            </div>
+            <div class="content">
+                <div class="date">May 07, 2025 — Your first easter egg</div>
+                <p class="caption">Eating our custom M + J Easter egg.</p>
+            </div>
+        </article>
+
+        <article class="item right">
+            <div class="media">
+                <img src="images/IMG_5641.JPEG" alt="Photo 22">
+            </div>
+            <div class="content">
+                <div class="date">June 06, 2025 — On our way to graduation!</div>
+                <p class="caption">When we had to run to get the train after our McDonalds.</p>
+            </div>
+        </article>
+
+        <article class="item left">
+            <div class="media">
+                <img src="images/IMG_5699.JPEG" alt="Photo 23">
+            </div>
+            <div class="content">
+                <div class="date">June 06, 2025 — When you ran away from dinner</div>
+                <p class="caption">Thank god you brought your band card...</p>
+            </div>
+        </article>
+
+        <article class="item right">
+            <div class="media">
+                <img src="images/IMG_5738.JPG" alt="Photo 24">
+            </div>
+            <div class="content">
+                <div class="date">June 07, 2025 — Graduation day</div>
+                <p class="caption">When you looked absolutely stunning and became my lady in red.</p>
+            </div>
+        </article>
+
+        <article class="item left">
+            <div class="media">
+                <img src="images/IMG_1017.JPG" alt="Photo 25">
+            </div>
+            <div class="content">
+                <div class="date">July 12, 2025 — My sisters birthday party</div>
+                <p class="caption">The day your understanding of Somerset English was tested</p>
+            </div>
+        </article>
+
+        <article class="item right">
+            <div class="media">
+                <img src="images/IMG_6395.JPEG" alt="Photo 26">
+            </div>
+            <div class="content">
+                <div class="date">July 15, 2025 — More competing</div>
+                <p class="caption">When you couldn't win fairly so used the kids rails</p>
+            </div>
+        </article>
+
+        <article class="item left">
+            <div class="media">
+                <img src="images/IMG_6408.JPG" alt="Photo 27">
+            </div>
+            <div class="content">
+                <div class="date">July 15, 2025 — Steak Dinner</div>
+                <p class="caption">Our second fancy steak dinner together, the next one we should make at home!</p>
+            </div>
+        </article>
+
+        <article class="item right">
+            <div class="media">
+                <img src="images/IMG_6420.JPG" alt="Photo 28">
+            </div>
+            <div class="content">
+                <div class="date">July 15, 2025 — On the way home</div>
+                <p class="caption">At least this time we had a car to get you home from the steak restaurant.</p>
+            </div>
+        </article>
+
+        <article class="item left">
+            <div class="media">
+                <img src="images/IMG_6466.JPEG" alt="Photo 29">
+            </div>
+            <div class="content">
+                <div class="date">July 19, 2025 — Making the house a home</div>
+                <p class="caption">My little picasso at work decorating our home.</p>
+            </div>
+        </article>
+
+
+        <!-- Add more items as needed. Duplicate one of the <article class="item ..."> blocks and edit -->
+
+        <div class="final">
+            <h2>Happy Birthday, Mireia 🎂</h2>
+            <p>Every day with you is my favourite. Thank you for being patient, for your laugh, your intelligence, and the warmth you bring into my life.</p>
+            <p class="muted-small">Con todo mi amor, Jonny</p>
+        </div>
+
+    </section>
+</div>
+
+<script>
+    // Smooth scroll from hero to timeline
+    document.getElementById('startBtn').addEventListener('click', function(){
+        document.getElementById('timeline').scrollIntoView({behavior:'smooth'});
+    });
+
+    // Intersection Observer to reveal items as they enter viewport
+    const items = document.querySelectorAll('.item');
+    const obs = new IntersectionObserver((entries)=>{
+        entries.forEach(entry=>{
+            if(entry.isIntersecting){
+                entry.target.classList.add('in-view');
+                // optional: unobserve so animation occurs once
+                obs.unobserve(entry.target);
+            }
+        })
+    },{threshold:0.15});
+
+    items.forEach(i=>obs.observe(i));
+
+    // Accessibility: enable keyboard to jump to timeline
+    document.addEventListener('keydown', (e)=>{
+        if(e.key === 'Enter' && document.activeElement === document.getElementById('startBtn')){
+            document.getElementById('timeline').scrollIntoView({behavior:'smooth'});
+        }
+    });
+</script>
+</body>
+</html>
